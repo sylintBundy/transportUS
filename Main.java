@@ -1,21 +1,24 @@
+package source;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 import java.sql.Statement;
+import java.util.Scanner;
 
-public class Main {
-    static final String database = "";
-    static final String netID = "";
-    static final String hostName = "";
-    static final String databaseURL = "";
-    static final String password = "";
+public class Program {
+	static final String database = "cs366-2231_bundyjg07";
+    static final String netID = "bundyjg07";
+    static final String hostName = "washington.uww.edu";
+    static final String databaseURL = "jdbc:mariadb://"+hostName+"/"+database;
+    static final String password = "jb9438";
     
-    private Connection connection = null;
+    private static Connection connection = null;
     
-    public void main(String[] args) {
+    public static void main(String[] args) {
         if (!TryConnection()) {
             System.out.println("Connection was unsuccessful.");
             return;
@@ -23,7 +26,7 @@ public class Main {
         else System.out.println("Connection was successful.");
     }
     
-    public boolean TryConnection() {
+    public static boolean TryConnection() {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             System.out.println("databaseURL" + databaseURL);
@@ -36,7 +39,7 @@ public class Main {
         }
     }
     
-    public ResultSet executeQuery(String query) {
+    public static ResultSet executeQuery(String query) {
         try {
             Statement statement = connection.createStatement();
             return statement.executeQuery(query);
@@ -47,7 +50,7 @@ public class Main {
         }
     }
     
-    public ResultSet executeStoredProcedure(String storedProcedure) {
+    public static ResultSet executeStoredProcedure(String storedProcedure) {
         try {
             Statement statement = connection.createStatement();
             CallableStatement callStatement = connection.prepareCall("{call " + storedProcedure + "}");
