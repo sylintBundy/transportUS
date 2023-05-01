@@ -25,6 +25,7 @@ public class Program {
     
     private static Connection connection = null;
     
+    // Finished
     public static void main(String[] args) {
         if (!tryConnection()) {
             System.out.println("Connection was unsuccessful.");
@@ -36,6 +37,7 @@ public class Program {
         }
     }
     
+    // Finished
     public static boolean tryConnection() {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
@@ -48,6 +50,45 @@ public class Program {
         }
     }
     
+    // Finished
+    public static boolean isInteger(String string) {
+    	try {
+    		Integer.parseInt(string);
+    	}
+    	catch (Exception e) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public static boolean isFloat(String string) {
+    	try {
+    		Float.parseFloat(string);
+    	}
+    	catch (Exception e) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    // Finished
+    public static void consoleHeader(String header, String subheader) {
+    	System.out.print("\033[H\033[2J");  
+        System.out.flush();
+        System.out.println(header);
+        if (subheader != null) {
+        	System.out.println(subheader);
+        }
+        System.out.println();
+    }
+    
+    // Finished
+    public static void endMenu(Scanner inputStream) {
+    	System.out.print("\nPress enter to continue...");
+    	inputStream.nextLine();
+    }
+    
+    // Finished
     public static boolean ynPrompt(String prompt, Scanner inputStream) {
     	try {
     		while (true) {
@@ -67,116 +108,6 @@ public class Program {
     	catch (Exception e) {
     		System.out.printf("Something went wrong in ynPrompt(): %s\n", e.getMessage());
     		return false;
-    	}
-    }
-    
-    public static boolean mainMenu() {
-    	consoleHeader("--- Main Menu ---", "What would you like to do?");
-    	Scanner inputStream = null;
-    	System.out.println("'query': make queries on the database.");
-    	System.out.println("'add': add data on the database.");
-    	System.out.println("'edit': edit data on the database.");
-    	System.out.print("'quit': quit the program.\n\n");
-    	try {
-    		inputStream = new Scanner(System.in);
-    		while (true) {
-    			System.out.print("Action: ");
-    			String input = inputStream.nextLine().toLowerCase();
-    			switch (input) {
-    			case "query":
-    				queryMenu(inputStream);
-    				break;
-    			case "add":
-    				addMenu(inputStream);
-    				break;
-    			case "edit":
-    				editMenu(inputStream);
-    				break;
-    			case "quit":
-    				return true;
-    			default:
-    				System.out.println("Not a recognized command.");
-    				break;
-    			}
-    		}
-    	}
-    	catch (Exception e) {
-    		System.out.printf("Something went wrong in mainMenu(): %s\n", e.getMessage());
-    		return false;
-    	}
-    	finally {
-    		if (inputStream != null) {
-    			inputStream.close();
-    		}
-    	}
-    }
-    
-    public static void queryMenu(Scanner inputStream) {
-    	consoleHeader("--- Query Menu ---", "What would you like to do?");
-    	System.out.println("'transportation': calculate transportation costs.");
-    	System.out.println("'state': get a state's details.");
-    	System.out.println("'municipality': get details about a town or county.");
-    	System.out.println("'inflation': get inflation rates between a year and 2023.");
-    	System.out.println("'return': return to the previous menu.");
-    	String input = "";
-    	try {
-    		while (true) {
-    			System.out.print("Action: ");
-    			input = inputStream.nextLine().toLowerCase();
-    			switch (input) {
-    				case "transportation":
-    					calculateTransport(inputStream);
-    					break;
-    				case "state":
-    					stateDetails(inputStream);
-    					break;
-    				case "municipality":
-    					municipalityDetails(inputStream);
-    					break;
-    				case "inflation":
-    					getInflation(inputStream);
-    					break;
-    				case "return":
-    					return;
-    				default:
-    					System.out.println("Not a recognized command.");
-    					break;
-    			}
-    		}
-    	}
-    	catch (Exception e) {
-    		System.out.printf("Something went wrong in queryMenu(): %s", e.getMessage());
-    	}
-    }
-    
-    public static void addMenu(Scanner inputStream) {
-    	consoleHeader("--- Add Menu ---", "What would you like to do?");
-    	System.out.println("'transportation': add an entry in the transportation table.");
-    	System.out.println("'inflation': add a year and its inflation rate.");
-    	System.out.println("'return': return to the previous menu.");
-    	try {
-    		while (true) {
-    			System.out.print("Action: ");
-    			String input = inputStream.nextLine().toLowerCase();
-    			switch (input) {
-    				case "transportation":
-    					addPrimaryEntry(inputStream);
-    					consoleHeader("--- Add Menu ---", "What would you like to do?");
-    					break;
-    				case "inflation":
-    					addInflationEntry(inputStream);
-    					consoleHeader("--- Add Menu ---", "What would you like to do?");
-    					break;
-    				case "return":
-    					return;
-    				default:
-    					System.out.println("Not a recognized command.");
-    					break;
-    			}
-    		}
-    	}
-    	catch (Exception e) {
-    		System.out.printf("Something went wrong in addMenu(): %s", e.getMessage());
     	}
     }
     
@@ -302,21 +233,244 @@ public class Program {
     	}
     }
     
-    // Resume work here
-    // Needs implementation
-    public static void addPrimaryEntry(Scanner inputStream) {
-    	consoleHeader("--- Add Transportation Entry ---", "Type 'return' at any time to return to the previous menu.");
-    	String[] answers = primaryPrompts(inputStream, false);
-    	if (answers != null) {
-    		String query = processInput(answers);
-    		if (checkForData(query)) {
-    			if (ynPrompt("An entry with this criteria already exists. Replace it?", inputStream)) {
-    				
+    // Finished
+    public static boolean mainMenu() {
+    	consoleHeader("--- Main Menu ---", "What would you like to do?");
+    	Scanner inputStream = null;
+    	System.out.println("'query': make queries on the database.");
+    	System.out.println("'add': add data on the database.");
+    	System.out.println("'edit': edit data on the database.");
+    	System.out.print("'quit': quit the program.\n\n");
+    	try {
+    		inputStream = new Scanner(System.in);
+    		while (true) {
+    			System.out.print("Action: ");
+    			String input = inputStream.nextLine().toLowerCase();
+    			switch (input) {
+    			case "query":
+    				queryMenu(inputStream);
+    				break;
+    			case "add":
+    				addMenu(inputStream);
+    				break;
+    			case "edit":
+    				editMenu(inputStream);
+    				break;
+    			case "quit":
+    				return true;
+    			default:
+    				System.out.println("Not a recognized command.");
+    				break;
     			}
+    		}
+    	}
+    	catch (Exception e) {
+    		System.out.printf("Something went wrong in mainMenu(): %s\n", e.getMessage());
+    		return false;
+    	}
+    	finally {
+    		if (inputStream != null) {
+    			inputStream.close();
     		}
     	}
     }
     
+    // Finished
+    public static void queryMenu(Scanner inputStream) {
+    	consoleHeader("--- Query Menu ---", "What would you like to do?");
+    	System.out.println("'transportation': calculate transportation costs.");
+    	System.out.println("'state': get a state's details.");
+    	System.out.println("'municipality': get details about a town or county.");
+    	System.out.println("'inflation': get inflation rates between a year and 2023.");
+    	System.out.println("'return': return to the previous menu.");
+    	String input = "";
+    	try {
+    		while (true) {
+    			System.out.print("Action: ");
+    			input = inputStream.nextLine().toLowerCase();
+    			switch (input) {
+    				case "transportation":
+    					calculateTransport(inputStream);
+    					break;
+    				case "state":
+    					stateDetails(inputStream);
+    					break;
+    				case "municipality":
+    					municipalityDetails(inputStream);
+    					break;
+    				case "inflation":
+    					getInflation(inputStream);
+    					break;
+    				case "return":
+    					return;
+    				default:
+    					System.out.println("Not a recognized command.");
+    					break;
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		System.out.printf("Something went wrong in queryMenu(): %s", e.getMessage());
+    	}
+    }
+    
+    // Not tested
+    public static void calculateTransport(Scanner inputStream) {
+    	consoleHeader("--- Calculate Transportation ---", "Type 'return' at any time to return to the previous menu.");
+    	String[] answers = primaryPrompts(inputStream, true);
+    	if (answers != null) {
+    		String query = processInput(answers);
+        	if (!displayQuery("The average annual cost for transportation for this criteria is: ", executeQuery(query), DisplayType.MONEY)) {
+        		System.out.println("No data with that criteria was found.");
+        	}
+    	}
+    	endMenu(inputStream);
+    }
+    
+    // Finished
+    public static void stateDetails(Scanner inputStream) {
+    	consoleHeader("--- Get State Details ---", null);
+    	try {
+    		while (true) {
+    			System.out.print("Enter a state, 'list', or 'return': ");
+    			String input = inputStream.nextLine();
+        		if (input.equalsIgnoreCase("return")) {
+        			break;
+        		}
+        		else if (input.equalsIgnoreCase("list")) {
+        			displayQuery(null, executeQuery("select * from state"), DisplayType.TABLE);
+        		}
+        		else displayQuery(null, executeQuery(String.format("select * from state where stateName=\"%s\"", input)), DisplayType.TABLE);
+    		}
+    	}
+    	catch (Exception e) {
+    		System.out.printf("Something went wrong in addToQuery(): %s", e.getMessage());
+    		endMenu(inputStream);
+    	}
+    }
+    
+    // Finished
+    public static void municipalityDetails(Scanner inputStream) {
+    	consoleHeader("--- Get Municipality Details ---", null);
+    	System.out.print("Enter a state, 'list', or 'return': ");
+    	try {
+    		String input = inputStream.nextLine();
+    		if (input.equalsIgnoreCase("return")) {
+    			return;
+    		}
+    		else if (input.equalsIgnoreCase("list")) {
+    			String query = "select * from countyortown";
+    			displayQuery(null, executeQuery(query), DisplayType.TABLE);
+    		}
+    		else {
+    			String query = String.format("select c.* from countyortown c, state s where c.stateAbbrev = s.stateAbbrev and s.stateName=\"%s\"", input);
+    			if (!displayQuery(null, executeQuery(query), DisplayType.TABLE)) {
+    				System.out.println("No data exists for that state.");
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		System.out.printf("Something went wrong in municipalityDetails(): %s", e.getMessage());
+    	}
+    	endMenu(inputStream);
+    }
+    
+    // Finished
+    public static void getInflation(Scanner inputStream) {
+    	consoleHeader("--- Get Inflation ---", null);
+    	while (true) {
+    		System.out.print("Enter a year or 'return': ");
+    		try {
+    			String input = inputStream.nextLine();
+    			if (input.equalsIgnoreCase("return")) {
+    				break;
+    			}
+    			int intInput = Integer.parseInt(input);
+    			String query = String.format("select rate from inflation where dataYear = %.2f;", intInput);
+    			if (!displayQuery("The inflation rate for " + intInput + " is: ", executeQuery(query), DisplayType.SINGLE)) {
+    				System.out.println("There is no inflation data for that year.");
+    			}
+    		}
+    		catch (NumberFormatException e) {
+    			System.out.println("Input is not a valid year.");
+    		}
+    		catch (Exception e) {
+    			System.out.printf("Something went wrong in getInflation(): %s", e.getMessage());
+    			break;
+    		}
+    	}
+    	endMenu(inputStream);
+    }
+    
+    // Finished
+    public static void addMenu(Scanner inputStream) {
+    	consoleHeader("--- Add Menu ---", "What would you like to do?");
+    	System.out.println("'transportation': add an entry in the transportation table.");
+    	System.out.println("'inflation': add a year and its inflation rate.");
+    	System.out.println("'return': return to the previous menu.");
+    	try {
+    		while (true) {
+    			System.out.print("Action: ");
+    			String input = inputStream.nextLine().toLowerCase();
+    			switch (input) {
+    				case "transportation":
+    					addPrimaryEntry(inputStream);
+    					consoleHeader("--- Add Menu ---", "What would you like to do?");
+    					break;
+    				case "inflation":
+    					addInflationEntry(inputStream);
+    					consoleHeader("--- Add Menu ---", "What would you like to do?");
+    					break;
+    				case "return":
+    					return;
+    				default:
+    					System.out.println("Not a recognized command.");
+    					break;
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		System.out.printf("Something went wrong in addMenu(): %s", e.getMessage());
+    	}
+    }
+    
+    // Not tested
+    public static void addPrimaryEntry(Scanner inputStream) {
+    	consoleHeader("--- Add Transportation Entry ---", "Type 'return' at any time to return to the previous menu.");
+    	String[] addition = primaryPrompts(inputStream, false);
+    	String[] answers = primaryPrompts(inputStream, false);
+    	for (short i = 0; i < answers.length; i++) {
+    		addition[i] = answers[i];
+    	}
+    	boolean replacing = false;
+    	if (answers != null) {
+    		String query = processInput(addition);
+    		if (checkForData(query)) {
+    			if (!ynPrompt("An entry with this criteria already exists. Replace it?", inputStream)) {
+    				endMenu(inputStream);
+    				return;
+    			}
+    			else replacing = true;
+    		}
+    		
+    	}
+    	while (true) {
+    		System.out.print("Enter the annual cost of transportation for the given criteria: ");
+    		String input = inputStream.nextLine();
+    		if (isFloat(input)) {
+    			addition[5] = input;
+    			break;
+    		}
+    		else System.out.println("Input must be a decimal lower than 100000.");
+    	}
+    	if (!replacing) {
+    		executeStoredProcedure("addTransportationEntry", answers);
+    	}
+    	else executeStoredProcedure("editTransportationEntry", answers);
+    	endMenu(inputStream);
+    }
+    
+    // Not tested
     public static void addInflationEntry(Scanner inputStream) {
     	consoleHeader("--- Add Inflation ---", null);
     	while (true) {
@@ -350,6 +504,7 @@ public class Program {
     	endMenu(inputStream);
     }
     
+    // Finished
     public static void editMenu(Scanner inputStream) {
     	consoleHeader("--- Edit Menu ---", "What would you like to do?");
     	System.out.println("'transportation': edit an entry in the transportation table.");
@@ -381,18 +536,39 @@ public class Program {
     	}
     }
     
+    // Not tested
     public static void editPrimaryEntry(Scanner inputStream) {
-    	
-    }
-    
-    public static boolean isInteger(String string) {
-    	try {
-    		Integer.parseInt(string);
+    	consoleHeader("--- Editing Transportation Entry ---", "Type 'return' at any time to return to the previous menu.");
+    	String[] addition = new String[6];
+    	String[] answers = primaryPrompts(inputStream, false);
+    	for (short i = 0; i < answers.length; i++) {
+    		addition[i] = answers[i];
     	}
-    	catch (Exception e) {
-    		return false;
+    	boolean replacing = false;
+    	if (answers != null) {
+    		String query = processInput(answers);
+    		if (checkForData(query)) {
+    			if (!ynPrompt("An entry with this criteria doesn't exist. Add it?", inputStream)) {
+    				endMenu(inputStream);
+    				return;
+    			}
+    			replacing = true;
+    		}
     	}
-    	return true;
+    	while (true) {
+    		System.out.print("Enter the annual cost of transportation for the given criteria: ");
+    		String input = inputStream.nextLine();
+    		if (isFloat(input)) {
+    			addition[5] = input;
+    			break;
+    		}
+    		else System.out.println("Input must be a decimal lower than 100000.");
+    	}
+    	if (replacing) {
+    		executeStoredProcedure("addTransportationEntry", addition);
+    	}
+    	else executeStoredProcedure("editTransportationEntry", addition);
+    	endMenu(inputStream);
     }
     
     // Needs implementation
@@ -428,18 +604,7 @@ public class Program {
     	}
     }
     
-    public static void calculateTransport(Scanner inputStream) {
-    	consoleHeader("--- Calculate Transportation ---", "Type 'return' at any time to return to the previous menu.");
-    	String[] answers = primaryPrompts(inputStream, true);
-    	if (answers != null) {
-    		String query = processInput(answers);
-        	if (!displayQuery("The average annual cost for transportation for this criteria is: ", executeQuery(query), DisplayType.MONEY)) {
-        		System.out.println("No data with that criteria was found.");
-        	}
-    	}
-    	endMenu(inputStream);
-    }
-    
+    // Not tested
     public static String processInput(String[] answers) {
     	for (short i = 0; i < answers.length; i++) {
     		System.out.print(answers[i] + ",");
@@ -464,88 +629,7 @@ public class Program {
     	return finalQuery;
     }
     
-    public static void stateDetails(Scanner inputStream) {
-    	consoleHeader("--- Get State Details ---", null);
-    	try {
-    		while (true) {
-    			System.out.print("Enter a state, 'list', or 'return': ");
-    			String input = inputStream.nextLine();
-        		if (input.equalsIgnoreCase("return")) {
-        			break;
-        		}
-        		else if (input.equalsIgnoreCase("list")) {
-        			displayQuery(null, executeQuery("select * from state"), DisplayType.TABLE);
-        		}
-        		else displayQuery(null, executeQuery(String.format("select * from state where stateName=\"%s\"", input)), DisplayType.TABLE);
-    		}
-    	}
-    	catch (Exception e) {
-    		System.out.printf("Something went wrong in addToQuery(): %s", e.getMessage());
-    		endMenu(inputStream);
-    	}
-    }
-    
-    public static void municipalityDetails(Scanner inputStream) {
-    	consoleHeader("--- Get Municipality Details ---", null);
-    	System.out.print("Enter a state, 'list', or 'return': ");
-    	try {
-    		String input = inputStream.nextLine();
-    		if (input.equalsIgnoreCase("return")) {
-    			return;
-    		}
-    		else if (input.equalsIgnoreCase("list")) {
-    			String query = "select * from countyortown";
-    			displayQuery(null, executeQuery(query), DisplayType.TABLE);
-    		}
-    		else {
-    			String query = String.format("select c.* from countyortown c, state s where c.stateAbbrev = s.stateAbbrev and s.stateName=\"%s\"", input);
-    			if (!displayQuery(null, executeQuery(query), DisplayType.TABLE)) {
-    				System.out.println("No data exists for that state.");
-    			}
-    		}
-    	}
-    	catch (Exception e) {
-    		System.out.printf("Something went wrong in municipalityDetails(): %s", e.getMessage());
-    	}
-    	endMenu(inputStream);
-    }
-    
-    public static void getInflation(Scanner inputStream) {
-    	consoleHeader("--- Get Inflation ---", null);
-    	while (true) {
-    		System.out.print("Enter a year or 'return': ");
-    		try {
-    			String input = inputStream.nextLine();
-    			if (input.equalsIgnoreCase("return")) {
-    				break;
-    			}
-    			int intInput = Integer.parseInt(input);
-    			String query = String.format("select rate from inflation where dataYear = %.2f;", intInput);
-    			if (!displayQuery("The inflation rate for " + intInput + " is: ", executeQuery(query), DisplayType.SINGLE)) {
-    				System.out.println("There is no inflation data for that year.");
-    			}
-    		}
-    		catch (NumberFormatException e) {
-    			System.out.println("Input is not a valid year.");
-    		}
-    		catch (Exception e) {
-    			System.out.printf("Something went wrong in getInflation(): %s", e.getMessage());
-    			break;
-    		}
-    	}
-    	endMenu(inputStream);
-    }
-    
-    public static void consoleHeader(String header, String subheader) {
-    	System.out.print("\033[H\033[2J");  
-        System.out.flush();
-        System.out.println(header);
-        if (subheader != null) {
-        	System.out.println(subheader);
-        }
-        System.out.println();
-    }
-    
+    // Finished
     public static boolean checkForData(String query) {
     	try {
     		query = query.concat(";");
@@ -561,6 +645,7 @@ public class Program {
     	}
     }
     
+    // Finished
     public static ResultSet executeQuery(String query) {
         try {
             Statement statement = connection.createStatement();
@@ -572,6 +657,7 @@ public class Program {
         }
     }
     
+    // Not tested
     public static boolean displayQuery(String preface, ResultSet results, DisplayType displayMode) {
     	ResultSetMetaData meta = null;
     	try {
@@ -626,7 +712,18 @@ public class Program {
     	}
     }
     
+    // Not tested
     public static ResultSet executeStoredProcedure(String storedProcedure, String[] args) {
+    	if (args != null && args.length != 0) {
+    		storedProcedure = storedProcedure.concat("(");
+    		for (short i = 0; i < args.length; i++) {
+        		if (i == args.length - 1) {
+        			storedProcedure = storedProcedure.concat(args[i]);
+        		}
+        		else storedProcedure = storedProcedure.concat(args[i] + ", ");
+        	}
+    		storedProcedure = storedProcedure.concat(")");
+    	}
         try {
             connection.createStatement();
             CallableStatement callStatement = connection.prepareCall("{call " + storedProcedure + "}");
@@ -643,10 +740,5 @@ public class Program {
             System.out.println("Something went wrong in executeStoredProcedure(): " + e.getMessage());
             return null;
         }
-    }
-
-    public static void endMenu(Scanner inputStream) {
-    	System.out.print("\nPress enter to continue...");
-    	inputStream.nextLine();
     }
 }
