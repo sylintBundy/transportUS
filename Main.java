@@ -61,6 +61,7 @@ public class Program {
     	return true;
     }
     
+    // Finished
     public static boolean isFloat(String string) {
     	try {
     		Float.parseFloat(string);
@@ -111,9 +112,10 @@ public class Program {
     	}
     }
     
-    // All the big stuffs is in here. Finish the year.
+    // Small implementation
     public static String[] primaryPrompts(Scanner inputStream, boolean average) {
     	String[] prompts = null;
+    	String stateAbbrev = null;
     	if (average) {
     		prompts = new String[] {
     	        "Enter a state, 'average' for the average, or 'list' for a list of states: ",
@@ -148,47 +150,28 @@ public class Program {
     					displayQuery("List of states:", executeQuery("select stateName from state"), DisplayType.LIST);
     				}
     				else if (answers[i].equalsIgnoreCase("list") && i == 1) {
-    					
+    					displayQuery("List of municipalities in " + answers[0] + ":", executeQuery("select countyOrTownName from countyortown where stateAbbrev = \"" + answers[0] + "\""), DisplayType.LIST);
     				}
     				else {
     					// State
     					if (i == 0) {
-    						// FIPS
-    						if (isInteger(answers[0])) {
-    							ResultSet results = executeQuery("select stateAbbrev from state where stateFIPS = " + Integer.parseInt(answers[0]));
-    							if (results != null && results.next()) {
-    								answers[0] = results.getString(1);
+    						if (!answers[0].equalsIgnoreCase("average")) {
+    							stateAbbrev = translateToAbbrev(answers[0]);
+    							if (stateAbbrev != null) {
+    								answers[0] = stateAbbrev;
     								break;
     							}
     							else System.out.println("No state using that data was found.");
     						}
-    						// Abbreviation
-    						else if (answers[0].length() == 2) {
-    							answers[0] = answers[0].toUpperCase();
-    							if (checkForData("select stateAbbrev from state where stateAbbrev = " + answers[0])) {
-    								break;
-    							}
-    							else System.out.println("No state using that data was found.");
-    						}
-    						// Average value
-    						else if (answers[0].equalsIgnoreCase("average") && average) {
-    							break;
-    						}
-    						// Name
-    						else {
-    							if (checkForData("select stateAbbrev from state where stateName = " + answers[0])) {
-    								break;
-    							}
-    							else System.out.println("No state using that data was found.");
-    						}
+    						else break;
     					}
     					// Municipality (get this implemented)
     					else if (i == 1) {
-    						if (answers[0].equalsIgnoreCase("average")) {
+    						if (answers[1].equalsIgnoreCase("average") || answers[i].equalsIgnoreCase("average")) {
     							break;
     						}
     						else {
-    							if (checkForData("select countyOrTownName from countyortown where stateAbbrev = " + answers[0] + " and countyOrTownName = " + answers[1])) {
+    							if (checkForData("select countyOrTownName from countyortown where stateAbbrev = \"" + answers[0] + "\" and countyOrTownName = \"" + answers[1] + "\"")) {
     								break;
     							}
     							else System.out.println("No municipality using that data was found.");
@@ -220,7 +203,15 @@ public class Program {
     					}
     					// Year
     					else if (i == 4) {
-    						
+    						if (!isInteger(answers[4])) {
+    							answers[4] = "2021";
+    							break;
+    						}
+    						else if (!checkForData("select dataYear from inflation where dataYear = " + answers[4])) {
+    							System.out.println("WARNING: This year does not contain any inflation rate.");
+    							break;
+    						}
+    						else break;
     					}
     				}
     			}
@@ -360,11 +351,11 @@ public class Program {
     		}
     		else if (input.equalsIgnoreCase("list")) {
     			String query = "select * from countyortown";
-    			displayQuery(null, executeQuery(query), DisplayType.TABLE);
+    			displayQuery("All municipalities:", executeQuery(query), DisplayType.TABLE);
     		}
     		else {
     			String query = String.format("select c.* from countyortown c, state s where c.stateAbbrev = s.stateAbbrev and s.stateName=\"%s\"", input);
-    			if (!displayQuery(null, executeQuery(query), DisplayType.TABLE)) {
+    			if (!displayQuery("Municipalities in " + input + ":", executeQuery(query), DisplayType.TABLE)) {
     				System.out.println("No data exists for that state.");
     			}
     		}
@@ -571,7 +562,7 @@ public class Program {
     	endMenu(inputStream);
     }
     
-    // Needs implementation
+    // Not tested
     public static void editInflationEntry(Scanner inputStream) {
     	consoleHeader("--- Edit Inflation ---", null);
     	while (true) {
@@ -604,19 +595,16 @@ public class Program {
     	}
     }
     
-    // Not tested
+    // Finished
     public static String processInput(String[] answers) {
-    	for (short i = 0; i < answers.length; i++) {
-    		System.out.print(answers[i] + ",");
-    	}
     	String selectClause = "select avg(t.cost) * (i.rate / 100 + 1) ";
     	String fromClause = "from transportation t, inflation i ";
-    	String whereClause = "where t.dataYear = i.dataYear";
+    	String whereClause = "where i.dataYear = t.dataYear";
     	if (!answers[0].equalsIgnoreCase("average")) {
-    		whereClause = whereClause.concat(" and t.stateAbbrev = " + answers[0]);
+    		whereClause = whereClause.concat(" and t.stateAbbrev = \"" + answers[0] + "\"");
     	}
     	if (!answers[1].equalsIgnoreCase("average")) {
-    		whereClause = whereClause.concat(" and t.countyOrTownName = " + answers[1]);
+    		whereClause = whereClause.concat(" and t.countyOrTownName = \"" + answers[1] + "\"");
     	}
     	if (!answers[2].equalsIgnoreCase("average")) {
     		whereClause = whereClause.concat(" and t.numAdults = " + answers[2]);
@@ -624,8 +612,8 @@ public class Program {
     	if (!answers[3].equalsIgnoreCase("average")) {
     		whereClause = whereClause.concat(" and t.numKids = " + answers[3]);
     	}
-    	whereClause = whereClause.concat(" and i.dataYear = " + answers[4]);
-    	String finalQuery = selectClause + fromClause + whereClause + ";";
+    	whereClause = whereClause.concat(" and t.dataYear = " + answers[4]);
+    	String finalQuery = selectClause + fromClause + whereClause;
     	return finalQuery;
     }
     
@@ -645,11 +633,40 @@ public class Program {
     	}
     }
     
+    public static String translateToAbbrev(String original) {
+    	if (isInteger(original)) {
+    		ResultSet results = executeQuery("select stateAbbrev from state where stateFIPS = " + original);
+    		try {
+    			results.next();
+    			return String.format("%s", results.getObject(1));
+    		}
+    		catch (Exception e) {
+    			return null;
+    		}
+    	}
+    	else if (original.length() == 2) {
+    		return original.toUpperCase();
+    	}
+    	else {
+    		ResultSet results = executeQuery("select stateAbbrev from state where stateName = \"" + original + "\"");
+    		try {
+    			results.next();
+    			return String.format("%s", results.getObject(1));
+    		}
+    		catch (Exception e) {
+    			return null;
+    		}
+    	}
+    }
+    
     // Finished
     public static ResultSet executeQuery(String query) {
         try {
             Statement statement = connection.createStatement();
             return statement.executeQuery(query);
+        }
+        catch (SQLException e) {
+        	return null;
         }
         catch (Exception e) {
             System.out.println("Something went wrong in executeQuery(): " + e.getMessage());
@@ -657,14 +674,15 @@ public class Program {
         }
     }
     
-    // Not tested
+    // Finished
     public static boolean displayQuery(String preface, ResultSet results, DisplayType displayMode) {
+    	if (results == null) {
+    		return false;
+    	}
     	ResultSetMetaData meta = null;
     	try {
     		meta = results.getMetaData();
     		switch (displayMode) {
-        	case NONE:
-        		return false;
         	case SINGLE:
         		if (results.next()) {
         			System.out.println(preface + results.getObject(1));
@@ -692,12 +710,18 @@ public class Program {
         		}
         		int columns = meta.getColumnCount();
         		for (int i = 1; i <= columns; i++) {
-        			System.out.print(meta.getColumnName(i) + ",");
+        			if (i == columns - 1) {
+        				System.out.println(meta.getColumnName(i));
+        			}
+        			else System.out.print(meta.getColumnName(i) + ", ");
         		}
         		System.out.println();
         		while (results.next()) {
         			for (int i = 1; i <= columns; i++) {
-        				System.out.print(results.getObject(i) + ",");
+        				if (i == columns - 1) {
+        					System.out.println(results.getObject(i));
+        				}
+        				else System.out.print(results.getObject(i) + ", ");
         			}
         			System.out.println();
         		}
