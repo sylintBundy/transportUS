@@ -53,7 +53,7 @@ public class Program {
             return true;
         }
         catch (Exception e) {
-            System.out.printf("Something went wrong in tryConnection(): %s\n", e.getMessage());
+        	System.out.printf("Something went wrong: %s\n", e.getMessage());
             return false;
         }
     }
@@ -115,7 +115,7 @@ public class Program {
     		}
     	}
     	catch (Exception e) {
-    		System.out.printf("Something went wrong in ynPrompt(): %s\n", e.getMessage());
+    		System.out.printf("Something went wrong: %s\n", e.getMessage());
     		return false;
     	}
     }
@@ -128,8 +128,8 @@ public class Program {
     		prompts = new String[] {
     	        "Enter a state, 'average' for the average, or 'list' for a list of states: ",
     	        "Enter a town or county in %s, 'average' for the average, or 'list' for a list of municipalities in %s: ",
-    	        "Enter a number of adults between 1 and 3 inclusively or 'average' for the average: ",
-    	        "Enter a number of children between 0 and 4 or 'average' for the average: ",
+    	        "Enter a number of adults (at least 1) or 'average' for the average: ",
+    	        "Enter a number of children or 'average' for the average: ",
     	        "Enter a year of data (2021 is default, but the database can be expanded.): "
     	    };
     	}
@@ -230,7 +230,7 @@ public class Program {
     		return answers;
     	}
     	catch (Exception e) {
-    		System.out.printf("Something went wrong in calculateTransport(): %s\n", e.getMessage());
+    		System.out.printf("Something went wrong: %s\n", e.getMessage());
     		return null;
     	}
     }
@@ -239,14 +239,18 @@ public class Program {
     public static boolean mainMenu() {
     	consoleHeader("--- Main Menu ---", "What would you like to do?");
     	while (true) {
+    		System.out.println("'quickies': a list of useful stored procedures.");
     		System.out.println("'query': make queries on the database.");
         	System.out.println("'add': add data on the database.");
         	System.out.println("'edit': edit data on the database.");
+        	System.out.println("'delete': delete data from the database.");
         	System.out.print("'quit': quit the program.\n\n");
         	System.out.print("Action: ");
         	try {
         		String input = inputStream.nextLine().toLowerCase();
     			switch (input) {
+    			case "quickies":
+    				return false;
     			case "query":
     				queryMenu();
     				return false;
@@ -255,6 +259,9 @@ public class Program {
     				return false;
     			case "edit":
     				editMenu();
+    				return false;
+    			case "delete":
+    				deleteMenu();
     				return false;
     			case "quit":
     				return true;
@@ -276,7 +283,7 @@ public class Program {
     	while (true) {
     		System.out.println("'transportation': calculate transportation costs.");
         	System.out.println("'state': get a state's details.");
-        	System.out.println("'municipality': get details about a town or county.");
+        	System.out.println("'municipality': get all the municipalities in a state.");
         	System.out.println("'inflation': get inflation rates between a year and 2023.");
         	System.out.print("'return': return to the previous menu.\n\n");
     		System.out.print("Action: ");
@@ -307,7 +314,7 @@ public class Program {
     			}
     		}
     		catch (Exception e) {
-    			System.out.printf("Something went wrong: %s", e.getMessage());
+    			System.out.printf("Something went wrong: %s\n", e.getMessage());
         		return;
     		}
     	}
@@ -343,7 +350,7 @@ public class Program {
     		}
     	}
     	catch (Exception e) {
-    		System.out.printf("Something went wrong in addToQuery(): %s", e.getMessage());
+    		System.out.printf("Something went wrong: %s\n", e.getMessage());
     		endMenu();
     	}
     	endMenu();
@@ -370,7 +377,7 @@ public class Program {
     		}
     	}
     	catch (Exception e) {
-    		System.out.printf("Something went wrong in municipalityDetails(): %s", e.getMessage());
+    		System.out.printf("Something went wrong: %s\n", e.getMessage());
     	}
     	endMenu();
     }
@@ -395,7 +402,7 @@ public class Program {
     			System.out.println("Input is not a valid year.");
     		}
     		catch (Exception e) {
-    			System.out.printf("Something went wrong in getInflation(): %s", e.getMessage());
+    			System.out.printf("Something went wrong: %s\n", e.getMessage());
     			break;
     		}
     	}
@@ -429,7 +436,7 @@ public class Program {
     			}
         	}
         	catch (Exception e) {
-        		System.out.printf("Something went wrong in addMenu(): %s", e.getMessage());
+        		System.out.printf("Something went wrong: %s\n", e.getMessage());
         	}
     	}
     }
@@ -501,7 +508,7 @@ public class Program {
     			System.out.println("Numeric input is not valid.");
     		}
     		catch (Exception e) {
-    			System.out.printf("Something went wrong in addInflation(): %s", e.getMessage());
+    			System.out.printf("Something went wrong: %s\n", e.getMessage());
     			break;
     		}
     	}
@@ -535,7 +542,7 @@ public class Program {
     			}
         	}
         	catch (Exception e) {
-        		System.out.printf("Something went wrong: %s", e.getMessage());
+        		System.out.printf("Something went wrong: %s\n", e.getMessage());
         	}
     	}
     }
@@ -578,7 +585,7 @@ public class Program {
     	endMenu();
     }
     
-    // Tested
+    // Implementation needed
     public static void editInflationEntry() {
     	consoleHeader("--- Edit Inflation ---", null);
     	while (true) {
@@ -607,8 +614,91 @@ public class Program {
     			System.out.println("Numeric input is not valid.");
     		}
     		catch (Exception e) {
-    			System.out.printf("Something went wrong in editInflation(): %s", e.getMessage());
+    			System.out.printf("Something went wrong: %s\n", e.getMessage());
     			break;
+    		}
+    	}
+    	endMenu();
+    }
+    
+    public static void deleteMenu() {
+    	consoleHeader("--- Delete Menu ---", "What would you like to do?");
+    	while (true) {
+    		System.out.println("'transportation': delete an entry in the transportation table.");
+        	System.out.println("'inflation': delete a year and its inflation rate.");
+        	System.out.print("'return': return to the previous menu.\n\n");
+        	System.out.print("Action: ");
+        	try {
+        		String input = inputStream.nextLine().toLowerCase();
+        		switch (input) {
+				case "transportation":
+					deletePrimaryEntry();
+					consoleHeader("--- Delete Menu ---", "What would you like to do?");
+					break;
+				case "inflation":
+					deleteInflationEntry();
+					consoleHeader("--- Delete Menu ---", "What would you like to do?");
+					break;
+				case "return":
+					return;
+				default:
+					System.out.println("Not a recognized command.");
+					break;
+        		}
+        	}
+        	catch (Exception e) {
+        		System.out.printf("Something went wrong: %s\n", e.getMessage());
+        	}
+    	}
+    }
+    
+    public static void deletePrimaryEntry() {
+    	consoleHeader("--- Delete Transportation Entry ---", "Type 'return' at any time to return to the previous menu.");
+    	String[] deletion = new String[6];
+    	String[] answers = primaryPrompts(false);
+    	for (short i = 0; i < answers.length; i++) {
+    		deletion[i] = answers[i];
+    	}
+    	deletion[0] = String.format("\"%s\"", deletion[0]);
+    	deletion[1] = String.format("\"%s\"", deletion[1]);
+    	if (answers != null) {
+    		String query = processInput(answers);
+    		if (checkForData(query)) {
+    			if (ynPrompt("Delete the entry with this criteria?")) {
+    				executeStoredProcedure("deleteTransportationEntry", deletion);
+    				System.out.println("Done!");
+    			}
+    		}
+    		else System.out.println("An entry with that criteria doesn't exist.");
+    	}
+    	endMenu();
+    }
+    
+    public static void deleteInflationEntry() {
+    	consoleHeader("--- Delete Inflation ---", null);
+    	while (true) {
+    		System.out.print("Enter a year or 'return': ");
+    		try {
+    			String input = inputStream.nextLine();
+    			if (input.equalsIgnoreCase("return")) {
+    				break;
+    			}
+    			int intInput = Integer.parseInt(input);
+    			String query = String.format("select rate from inflation where dataYear = %d", intInput);
+    			if (checkForData(query)) {
+    				if (ynPrompt("Delete inflation rate for " + intInput + "?")) {
+    					executeStoredProcedure("deleteInflationEntry", new String[] {input});
+    					System.out.println("Done!");
+    					break;
+    				}
+    			}
+    			else System.out.println("No data for that year was found.");
+    		}
+    		catch (NumberFormatException e) {
+    			System.out.println("Numeric input is not valid.");
+    		}
+    		catch (Exception e) {
+    			System.out.printf("Something went wrong: %s\n", e.getMessage());
     		}
     	}
     	endMenu();
@@ -616,7 +706,7 @@ public class Program {
     
     // Finished
     public static String processInput(String[] answers) {
-    	String selectClause = "select avg(t.cost) * (i.rate / 100 + 1) ";
+    	String selectClause = "select round(avg(t.cost) * (i.rate / 100 + 1), 2) ";
     	String fromClause = "from transportation t, inflation i ";
     	String whereClause = "where i.dataYear = t.dataYear";
     	if (!answers[0].equalsIgnoreCase("average")) {
@@ -689,7 +779,7 @@ public class Program {
         	return null;
         }
         catch (Exception e) {
-            System.out.println("Something went wrong in executeQuery(): " + e.getMessage());
+        	System.out.printf("Something went wrong: %s\n", e.getMessage());
             return null;
         }
     }
@@ -711,7 +801,7 @@ public class Program {
         		return true;
         	case MONEY:
         		if (results.next()) {
-        			double money = Math.round(Double.parseDouble(results.getObject(1).toString()) * 100.0) / 100.0;
+        			double money = Double.parseDouble(results.getObject(1).toString());
         			System.out.println(preface + "$" + money);
         		}
         		else return false;
@@ -735,7 +825,6 @@ public class Program {
         			}
         			else System.out.print(meta.getColumnName(i) + ", ");
         		}
-        		System.out.println();
         		while (results.next()) {
         			for (int i = 1; i <= columns; i++) {
         				if (i == columns) {
@@ -751,6 +840,7 @@ public class Program {
         	}
     	}
     	catch (Exception e) {
+    		System.out.printf("Something went wrong: %s\n", e.getMessage());
     		return false;
     	}
     }
@@ -780,7 +870,7 @@ public class Program {
         	return null;
         }
         catch (Exception e) {
-            System.out.println("Something went wrong in executeStoredProcedure(): " + e.getMessage());
+        	System.out.printf("Something went wrong: %s\n", e.getMessage());
             return null;
         }
     }
