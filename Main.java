@@ -369,6 +369,9 @@ public class Program {
     					System.out.printf("#%d: %s ($%.2f)\n", rank, results.getString(1), results.getDouble(2));
     					rank++;
     				}
+    				if (rank == 1) {
+    					System.out.println("No data exists for that year.");
+    				}
     				break;
     			}
     		}
@@ -402,6 +405,9 @@ public class Program {
         				endMenu();
         				return;
         			}
+    				else if (i == 0 && answers[i].equalsIgnoreCase("list")) {
+    					displayQuery(null, executeQuery("select * from state order by stateName"), DisplayType.TABLE);
+    				}
     				else if (i == 0) {
     					stateAbbrev = translateToAbbrev(answers[0]);
             			if (stateAbbrev != null) {
@@ -422,7 +428,7 @@ public class Program {
         		}
         		catch (Exception e) {
         			System.out.printf("Something went wrong: %s\n", e.getMessage());
-        			break;
+        			return;
         		}
     		}
     	}
@@ -432,6 +438,9 @@ public class Program {
 			while (results.next()) {
 				System.out.printf("#%d: %s ($%.2f)\n", rank, results.getString(1), results.getDouble(2));
 				rank++;
+			}
+			if (rank == 1) {
+				System.out.println("No data exists for that criteria.");
 			}
 		}
 		catch (Exception e) {
@@ -950,7 +959,6 @@ public class Program {
     
     // Finished
     public static ResultSet executeQuery(String query) {
-    	System.out.println(query);
         try {
             Statement statement = connection.createStatement();
             return statement.executeQuery(query);
